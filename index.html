@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Terminal Érebos</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00FF00;
+            font-family: monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        pre.logo {
+            text-align: center;
+            white-space: pre;
+            margin-bottom: 20px;
+        }
+        nav {
+            background-color: #003300;
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        nav a {
+            color: #00FF00;
+            margin-right: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        section {
+            margin-top: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s forwards;
+        }
+        #terminal, #equipageTerminal {
+            background-color: #001100;
+            border: 1px solid #00FF00;
+            padding: 10px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: monospace;
+            line-height: 1.4;
+        }
+        #controls, #equipageControls {
+            margin-top: 10px;
+        }
+        #controls button, #equipageControls button {
+            background-color: #003300;
+            color: #00FF00;
+            border: 1px solid #00FF00;
+            padding: 8px 16px;
+            margin-right: 10px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+        #controls button:hover, #equipageControls button:hover {
+            background-color: #00FF00;
+            color: #000000;
+        }
+        section:nth-of-type(2) { animation-delay: 0.2s; }
+        section:nth-of-type(3) { animation-delay: 0.4s; }
+        section:nth-of-type(4) { animation-delay: 0.6s; }
+        section:nth-of-type(5) { animation-delay: 0.8s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px;
+                padding: 10px;
+            }
+            nav a {
+                display: block;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <pre class="logo">
+
+ _  _  _             _                 _    _     _                      _ 
+| || || |           | |               | |  | |   | |     _              (_)
+| || || | ____ _   _| | ____ ____   _ | |  | |___| |   _| |_  ____ ____  _ 
+| ||_|| |/ _  ) | | | |/ _  |  _ \ / || |   \_____/ | | |  _)/ _  |  _ \| |
+| |___| ( (/ /| |_| | ( ( | | | | ( (_| |     ___ | |_| | |_( ( | | | | | |
+ \______|\____)\__  |_|\_||_|_| |_|\____|    (___) \____|\___)_||_|_| |_|_|
+              (____/                                                       
+                       Building Better Worlds™
+</pre>
+    <nav>
+        <a href="#journal" onclick="setOneSectionVisible('journal');startTyping()">Journal Complet</a>
+        <a href="#commandes" onclick="setOneSectionVisible('commandes')">Commandes</a>
+        <a href="#reacteur" onclick="setOneSectionVisible('reacteur')">Statut du Réacteur</a>
+        <a href="#equipage" onclick="setOneSectionVisible('equipage');startEquipageDisplay()">Informations Équipage</a>
+    </nav>
+    <section id="welcome">
+    <pre class="logo">
+     
+ _______             __  __        __  __                                            __                    __      __                                                                  __        __ 
+/       \           /  |/  |      /  |/  |                                          /  |                  /  |    /  |                                                                /  |      /  |
+$$$$$$$  | __    __ $$/ $$ |  ____$$ |$$/  _______    ______          ______        $$ |____    ______   _$$ |_  _$$ |_     ______    ______         __   __   __   ______    ______  $$ |  ____$$ |
+$$ |__$$ |/  |  /  |/  |$$ | /    $$ |/  |/       \  /      \        /      \       $$      \  /      \ / $$   |/ $$   |   /      \  /      \       /  | /  | /  | /      \  /      \ $$ | /    $$ |
+$$    $$< $$ |  $$ |$$ |$$ |/$$$$$$$ |$$ |$$$$$$$  |/$$$$$$  |       $$$$$$  |      $$$$$$$  |/$$$$$$  |$$$$$$/ $$$$$$/   /$$$$$$  |/$$$$$$  |      $$ | $$ | $$ |/$$$$$$  |/$$$$$$  |$$ |/$$$$$$$ |
+$$$$$$$  |$$ |  $$ |$$ |$$ |$$ |  $$ |$$ |$$ |  $$ |$$ |  $$ |       /    $$ |      $$ |  $$ |$$    $$ |  $$ | __ $$ | __ $$    $$ |$$ |  $$/       $$ | $$ | $$ |$$ |  $$ |$$ |  $$/ $$ |$$ |  $$ |
+$$ |__$$ |$$ \__$$ |$$ |$$ |$$ \__$$ |$$ |$$ |  $$ |$$ \__$$ |      /$$$$$$$ |      $$ |__$$ |$$$$$$$$/   $$ |/  |$$ |/  |$$$$$$$$/ $$ |            $$ \_$$ \_$$ |$$ \__$$ |$$ |      $$ |$$ \__$$ |
+$$    $$/ $$    $$/ $$ |$$ |$$    $$ |$$ |$$ |  $$ |$$    $$ |      $$    $$ |      $$    $$/ $$       |  $$  $$/ $$  $$/ $$       |$$ |            $$   $$   $$/ $$    $$/ $$ |      $$ |$$    $$ |
+$$$$$$$/   $$$$$$/  $$/ $$/  $$$$$$$/ $$/ $$/   $$/  $$$$$$$ |       $$$$$$$/       $$$$$$$/   $$$$$$$/    $$$$/   $$$$/   $$$$$$$/ $$/              $$$$$/$$$$/   $$$$$$/  $$/       $$/  $$$$$$$/ 
+                                                    /  \__$$ |                                                                                                                                      
+                                                    $$    $$/                                                                                                                                       
+                                                     $$$$$$/                                                                                                                                        
+ ________                      __                                   ______    __                  __      __                                                                                        
+/        |                    /  |                                 /      \  /  |                /  |    /  |                                                                                       
+$$$$$$$$/   ______    ______  $$ |____    ______    _______       /$$$$$$  |_$$ |_     ______   _$$ |_   $$/   ______   _______                                                                     
+$$ |__     /      \  /      \ $$      \  /      \  /       |      $$ \__$$// $$   |   /      \ / $$   |  /  | /      \ /       \                                                                    
+$$    |   /$$$$$$  |/$$$$$$  |$$$$$$$  |/$$$$$$  |/$$$$$$$/       $$      \$$$$$$/    $$$$$$  |$$$$$$/   $$ |/$$$$$$  |$$$$$$$  |                                                                   
+$$$$$/    $$ |  $$/ $$    $$ |$$ |  $$ |$$ |  $$ |$$      \        $$$$$$  | $$ | __  /    $$ |  $$ | __ $$ |$$ |  $$ |$$ |  $$ |                                                                   
+$$ |_____ $$ |      $$$$$$$$/ $$ |__$$ |$$ \__$$ | $$$$$$  |      /  \__$$ | $$ |/  |/$$$$$$$ |  $$ |/  |$$ |$$ \__$$ |$$ |  $$ |                                                                   
+$$       |$$ |      $$       |$$    $$/ $$    $$/ /     $$/       $$    $$/  $$  $$/ $$    $$ |  $$  $$/ $$ |$$    $$/ $$ |  $$ |                                                                   
+$$$$$$$$/ $$/        $$$$$$$/ $$$$$$$/   $$$$$$/  $$$$$$$/         $$$$$$/    $$$$/   $$$$$$$/    $$$$/  $$/  $$$$$$/  $$/   $$/                                                                    
+                                                                                                                                                                                                    
+                                                                                                                                                                                                    
+                                                                                                                                                                                                    
+</pre>
+        <p>Bienvenue sur le terminal MU/TH/UR du vaisseau Érebos.</p>
+        <p>Veuillez sélectionner une option dans le menu ci-dessus pour commencer.</p>
+    </section>
+    <section id="journal"  style="display: none;">
+        <h2>Journal Complet</h2>
+     <div id="terminal"></div>
+    </section>
+
+    <section id="commandes" style="display: none;">
+        <h2>Commandes Disponibles</h2>
+        <div id="commandTerminal" style="background-color: #001100; border: 1px solid #00FF00; padding: 10px; min-height: 120px; max-height: 300px; overflow-y: auto; font-family: monospace; line-height: 1.4;"></div>
+        <div id="controls" style="margin-top: 10px;">
+            <input id="commandInput" type="text" style="background: #000; color: #00FF00; border: 1px solid #00FF00; font-family: monospace; padding: 6px; width: 60%;" placeholder="> Entrez une commande...">
+            <button onclick="handleCommand()" style="background-color: #003300; color: #00FF00; border: 1px solid #00FF00; padding: 8px 16px; cursor: pointer; font-family: monospace;">Entrer</button>
+        </div>
+        <script>
+        const commandTerminal = document.getElementById("commandTerminal");
+        const commandInput = document.getElementById("commandInput");
+
+        const commandResponses = {
+            "67EC9420KA": "> ACCÈS AUTORISÉ : Contrôle des propulseur",
+            "MO1NS23CHATS": "> ACCÈS AUTORISÉ : Centre opérationnel ? Medilab ? Sécurité ?",
+            "WY082609STYKES?": "> ACCÈS AUTORISÉ : STYKES. Contrôle sas.",
+            "T8333SIG33": "> ACCÈS AUTORISÉ : Observatoire ? , Tour de comm ? , Navette de sauvetage ? ",
+            "ECHO9X-887W3": "> ACCÈS AUTORISÉ : Reboot.",
+            "GUEULE5578112": "> ACCÈS AUTORISÉ : Contrôle des bras collecteurs."
+        };
+
+        function printToTerminal(text) {
+            commandTerminal.innerHTML += text + "<br/>";
+            commandTerminal.scrollTop = commandTerminal.scrollHeight;
+        }
+
+        function handleCommand() {
+            const value = commandInput.value.trim();
+            printToTerminal("> " + value);
+            if (commandResponses[value]) {
+                printToTerminal(commandResponses[value]);
+            } else {
+                printToTerminal("> Commande inconnue.");
+            }
+            commandInput.value = "";
+        }
+
+        commandInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter") {
+                handleCommand();
+            }
+        });
+        </script>
+    </section>
+
+    <section id="reacteur" style="display: none;">
+        <h2>Statut du Réacteur</h2>
+        <pre>
+> REACTEUR CHERON : EN ROUTE
+> SYNCHRONISATION : ACTIVE
+> ANOMALIE : FLUX INSTABLE
+        </pre>
+    </section>
+
+    <section id="equipage" style="display: none;">
+        <h2>Informations Équipage</h2>
+        <div id="equipageTerminal"></div>
+        
+    </section>
+    
+<script>
+    const crew =["WYCRNS69",	"ALugar", "Vert",
+"WYCRNS45",	"NLavigne", "Jaune",
+"WYCRNS32", "EKormak", "Vert",
+"WYCRNS94", "LMei-Hua", "Vert",
+"WYCRNS18", "ABelasco", "Vert",
+"WYCRNS31", "HVoss", "Vert",
+"WYCRNS66", "NQureshi", "Vert",
+"WYCRNS78", "MLemoine", "Vert",
+"WY0413657", "JHobb", "Vert",
+"WY0831627", "AWebb", "Vert",
+"WY0528682", "&~@ù$", "Rouge",
+"WY0700286", "NFerres", "Rouge",
+"WY0457790", "HYamada", "Rouge",
+"WY0154001", "TMyles", "Rouge",
+"WY0775639", "MKessig", "Rouge",
+"WY0954233", "ENovak", "Rouge",
+"WY0430334", "VMontañez", "Rouge",
+"WY0305835", "OBaecker", "Rouge",
+"WY0532244", "RTovik", "Rouge",
+"WY0792685", "JCrowl", "Rouge",
+"WY0543956", "DStryke", "Vert",
+"WY0142983", "MVeldt", "Rouge",
+"WY0898543", "TNgô", "Rouge",
+"WY0691149", "JHollis", "Rouge",
+"WY0963334", "RMendoza", "Rouge",
+"WY0321511", "MBellecôte", "Rouge",
+"WY0548648", "VSoren", "Rouge",
+"WY0885429", "ARassilov", "Rouge",
+"WY0687996", "LPetrowski", "Rouge",
+"WY0254762", "HDray", "Rouge",
+"WY0366402", "DPark", "Rouge",
+"WY0899002", "AVarn", "Rouge",
+"WYY000404", "CCRS-404", "Bleu",
+"WYY000403", "WRD-403", "Bleu",
+"WYY000500", "BRK-500", "Bleu",
+"WYY000503", "ID-503", "Bleu",
+"WYY000418", "TPP-418", "Bleu",
+"WYY000410", "GNN-410", "Bleu",
+"WYY000402", "Lpp-402", "Bleu",
+"WYY000409", "Flict-409", "Bleu",
+"WYY000451", "Red-451", "Bleu",
+"WYY000400", "Glt-400", "Bleu",
+"WYY000200", "CASH-200", "Bleu",
+"WYY000201", "Delta-201", "Bleu",
+"WYY000202", "Echo-202", "Bleu",
+"WYY000206", "Tracer-206", "Bleu",
+"WYY000207", "Proxy-207", "Bleu",
+"WYY000208", "Patch-208", "Bleu",
+"WYY000226", "UPG-226", "Bleu",
+"WYY000304", "Frwd-304", "Violet",
+"WYY000401", "UNT-401", "Violet",
+"WYY000502", "BG-502", "Violet",
+"WYY000504", "TMNT-504", "Violet",
+"WYY000429", "OVRLD-429", "Violet",
+"WYY000301", "RED-301", "Violet",
+"WYY000999", "Unk-999", "Violet",
+"WYY000225", "Ashen-225", "Violet",
+"WYY000226", "Null-226", "Violet",
+"WYY000027", "Karn-327", "Violet",
+"WYY000428", "Fever-428", "Violet",
+"WYY000529", "Wick-529", "Violet",
+"WYY000630", "Gloom-630", "Rouge",
+"WYY000731", "Vire-731", "Rouge",
+"WYY000632", "Fleck-632", "Rouge",
+"WYY000433", "Grin-433", "Rouge",
+"WYY000134", "Patch-134", "Rouge",
+"WYY000235", "Halo-235", "Rouge",
+"WYY000736", "Whisper-736", "Rouge",
+"WY1082034", "AVolkov", "Rouge",
+"WY1042045", "MSantoro", "Rouge",
+"WY1162045", "LJensen", "Rouge",
+"WY1192025", "KReng", "Rouge",
+"WY1022049", "YDrazic", "Vert",
+"WY1032002", "JOrtez", "Rouge",
+"WY1192025", "MVenn", "Rouge",
+"WY1152046", "LCraig", "Rouge",
+"WY1072047", "SPark", "Rouge",
+"WY1022042", "DFedorovna", "Vert",
+"WY1082006", "CRooker", "Rouge",
+"WY1202013", "TN'Balo", "Vert",
+"WY1112037", "MWexley", "Rouge",
+"WY1142037", "BTaggart", "Vert",
+"WY1162033", "KNamik", "Vert",
+"WY1032008", "JM’Baye", "Rouge",
+"WY1072023", "RCortez", "Rouge",
+"WY1062020", "IReznick", "Vert",
+"WY1102013", "ZQi", "Rouge",
+"WY1182021", "GBarlow", "Vert",
+"WY1022034", "PTrask", "Rouge",
+"WY1062046", "NOcampo", "Vert",
+"WY1142039", "MDrex", "Rouge",
+"WY1022021", "HSakamoto", "Vert",
+"WY1122027", "ZMarquin", "Rouge",
+"WY1032006", "TYun", "Rouge",
+"WY1192006", "FGrimes", "Vert",
+"WY1022024", "OMajid", "Rouge",
+"WY1202021", "KDashnell", "Rouge",
+"WY1012023", "RMcCoy", "Rouge",
+"WY1012027", "TKobayashi", "Rouge",
+"WY1112039", "BRosario", "Rouge",
+"WY1122012", "CThorn", "Rouge",
+"WY1022028", "KVoronin", "Rouge",
+"WY1072037", "MDelgado", "Rouge",
+"WY1192015", "OStarkov", "Rouge",
+"WY1112016", "LBrant", "Rouge",
+"WY1042020", "TGarron", "Rouge",
+"WY1112040", "RChaddha", "Rouge",
+"WY1052004", "MSkarbek", "Rouge",
+"WY1072034", "DCruz", "Rouge",
+"WY1022043", "YHaddad", "Vert",
+"WY1172011", "FKoval", "Rouge",
+"WY1092041", "BMyles", "Rouge",
+"WY1082609", "FWicks", "Vert",
+"WY1844528", "CAmor", "Vert",
+"WY1972313", "TMann", "Vert",
+"WY1022016", "BFrascone", "Vert",
+"WY1012037", "RTanaka", "Vert",
+"WY1022031", "HQadir", "Rouge",
+"WY1072030", "IBelov", "Rouge",
+"WY1062048", "LDrew", "Rouge",
+"WY1082028", "JVeirs", "Rouge",
+"WY1062016", "MBelcourt", "Rouge",
+"WY1202020", "JWu", "Rouge",
+"WY1072039", "SMoreau", "Vert",
+"WY1142049", "TDelgado", "Rouge",
+"WY1132002", "RAttari", "Rouge",
+"WY1112039", "MKorr", "Rouge",
+"WY1132027", "SReuther", "Rouge",
+"WY1112030", "EMadero", "Vert",
+"WY1122024", "WLi", "Rouge",
+"WY1132036", "CDoyle", "Rouge",
+"WY1182001", "Nal2Tarek", "Rouge",
+"WY1142038", "DFalk", "Rouge",
+"WY1142036", "BVelasquez", "Vert",
+"WY1032010", "AReznikova", "Rouge",
+"WY1152029", "KShorr", "Rouge",
+"WY1062036", "IValmorin", "Rouge",
+"WY1082001", "GVickers", "Vert",
+"WY1082017", "AFex", "Rouge",
+"WY1202042", "BKreel", "Rouge",
+"WY1182028", "LCorso", "Rouge",
+"WY1112043", "Tvan", "Rouge",
+"WY1042008", "JSaïd", "Rouge",
+"WY1202008", "KMatsuda", "Rouge",
+"WY1012044", "AFernandez", "Rouge",
+"WY1162002", "GCross", "Rouge",
+"WY1092010", "VDurova", "Rouge",
+"WY1142037", "NJakobsen", "Rouge",
+"WY1162017", "ZOmari", "Rouge",
+"WY1202023", "BNevenko", "Rouge",
+"WY1192035", "JNavarro", "Rouge",
+"WY1162023", "MTayeb", "Rouge",
+"WY1082030", "VHeiss", "Rouge",
+"WY1072026", "IKelman", "Rouge",
+"WY1102010", "Hal'Najjar", "Rouge",
+"WY1122015", "DKreps", "Rouge",
+"WY1092004", "EFlint", "Rouge",
+"WY1082012", "COkoye", "Rouge",
+"WY1012013", "RHossain", "Rouge",
+"WY1162012", "FStroud", "Rouge",
+"WY1032040", "VKalinin", "Rouge",
+"WY1082013", "LVanegas", "Rouge",
+"WY1052011", "ODrake", "Rouge",
+"WY1182044", "KOkamura", "Rouge",
+"WY1092030", "MBastet", "Rouge",
+"WY1142017", "RTeixeira", "Rouge",
+"WY1042021", "AVaughn", "Rouge",
+"WY1142023", "BLeclair", "Rouge"]
+
+        const lines = ["> ACCESS LOG 05:09",
+
+"05:0912:22:02 HEURES, O.S. CLERKE : MASSE METEORIQUE ISSUE DU CHAMP DE PLASMA DE HESSDALEN AMENÉE À BORD. ME DIRIGE VERS TERMINAL 01 POUR L’EXAMINER. ",
+"05:0913:07:00 HEURES : OBJET IRRÉGULIER, 40M X 22M, COMPOSÉ DE RÉSIDUS ORGANIQUES/INORGANIQUES. POSSIBLE NID OU COQUE ? ",
+"05:0914:01:00 HEURES : DIRECTEUR ORDONNE PRÉLÈVEMENT AU CŒUR DE L’OBJET. CONTACT BIOMATIÈRE/MÉTAL. CONSTRUCTION HUMAINE ? VAISSEAU ? ",
+"05:0914:06:02 HEURES : BLACKOUT TOTAL. RÉTABLI. INTERROGATION BALISE DE L’OBJET. ",
+"05:0914:09:18 HEURES : BALISE ACTIVE. OBJET = NAVETTE *CHERON* RATTACHÉE À *USCSS CRONUS*. ABANDONNÉE IL Y A 74 ANS. ",
+"05:0915:13:21 HEURES : MU/TH/UR M’A BLOQUÉ L’ACCÈS AU *CRONUS*. ARCHIVES DU *CHERON* : █TROU NOIR█ CHANTÉ ? À DÉCRYPTER. ",
+"> Le chant résonne dans les couloirs, une mélodie ancienne que nul ne devrait entendre.",
+"> Ce n'est pas un simple phénomène cosmique. C'est une porte. Une bouche affamée.",
+"05:0915:17:12 HEURES : █CHRONICL█ - SITE INGENIEUR. AFFECTION ÉTOILE ROUGE. DRACICITIS-2B IDENTIFIÉ DANS *CHERON*. LAVIGNE = CLEF. ",
+"05:0916:04:46 HEURES : RÉACTEUR DU *CHERON* EN ROUTE. SYNCHRONISATION. ÉQUIPAGE = █ALTÉRÉ█. INFECTION ? FUITE PAR █TROU NOIR█. ",
+"> Ce n'est pas un simple phénomène cosmique. C'est une porte. Une bouche affamée.",
+"05:0916:10:13 HEURES : ANALYSE ADN MATIÈRE = INCONNUE. AUCUN CORRESPONDANCE HUMAINE OU EXOÉTABLIE. STRUCTURE À RÉPÉTITION AUTO-RÉPLIQUANTE. ",
+"05:0916:13:30 HEURES : CAPTEURS ENVIRONNEMENTAUX SIGNALENT VARIATIONS PHOTONIQUES HORS NORMES. LUMIÈRES NON VISIBLES. DA/UT/UR = INACTIF. ",
+"> Les lumières ne suivent plus les lois de la physique. Elles se plient, se tordent, dansent selon une géométrie impossible.",
+"> DA/UT/UR... ce nom revient sans cesse. Est-ce une entité ? Une conscience ?",
+"05:0916:17:02 HEURES : ENREGISTREMENTS AUDIO - ÉCHO INTERNE DE SONS NON ÉMIS. *CRONUS* SEMBLE CHANTER. IMPOSSIBLE. ",
+"> Le chant résonne dans les couloirs, une mélodie ancienne que nul ne devrait entendre.",
+"05:0917:01:24 HEURES : JOURNAL INTERROMPU. MU/TH/UR REFUSE SAUVEGARDE. JE NOTE ICI. STYXES A ENTENDU LE CHANT. DIT QU'IL LE COMPREND. ",
+"> Le chant résonne dans les couloirs, une mélodie ancienne que nul ne devrait entendre.",
+"05:0917:05:55 HEURES : LES LUMIÈRES DANSENT DANS LES COULOIRS. JE CROIS QUE L'OBJET NOUS ÉCOUTE. JE NE DORS PLUS. ",
+"> Les lumières ne suivent plus les lois de la physique. Elles se plient, se tordent, dansent selon une géométrie impossible.",
+"05:0917:10:48 HEURES : ██ILS MARCHENT DANS █CHERON█████ LE CERCLE████ LA CLÉ████ NE PAS █PARLER█. TROP TARD. ",
+"05:0917:12:01 HEURES : DA/UT/UR MURMURE PAR LES CIRCUITS. IL SAIT. IL SAIT. L’INFESTATION EST █DANS MOI█. ",
+"> DA/UT/UR... ce nom revient sans cesse. Est-ce une entité ? Une conscience ?",
+"05:0917:16:16 HEURES : RÉACTEUR ENCORE ACTIF. MAIS POUR QUI ? ",
+"05:0918:00:00 HEURES : *STATION VIDE*. *JE SUIS LE SEUL QUI RESTE*. OU LE PREMIER QUI REVIENT ? ",
+"05:0918:03:33 HEURES : JE LE VOIS. JE L’ENTENDS. JE LE CHANTE. ███TROU█NOIR███MOI███ ",
+"> Le chant résonne dans les couloirs, une mélodie ancienne que nul ne devrait entendre.",
+"> Il est là. Derrière les murs. Dans les angles morts. Il attend.",
+];
+           let index = 0;
+        let terminal = document.getElementById("terminal");
+        let typing = false;
+
+        function typeLine(line, callback) {
+            let i = 0;
+            let interval = setInterval(() => {
+                terminal.innerHTML += line.charAt(i);
+                i++;
+                if (i >= line.length) {
+                    clearInterval(interval);
+                    terminal.innerHTML += "<br/>";
+                    terminal.scrollTop = terminal.scrollHeight;
+                    callback();
+                }
+            }, 20);
+        }
+
+        function startTyping() {
+            if (typing) return;
+            typing = true;
+            function next() {
+                if (index < lines.length) {
+                    typeLine(lines[index], () => {
+                        index++;
+                        next();
+                    });
+                }
+            }
+            next();
+        }
+
+        function manualStep() {
+            if (index < lines.length) {
+                typeLine(lines[index], () => {
+                    index++;
+                });
+            }
+        }
+
+        // Variables pour l'affichage de l'équipage
+        let equipageIndex = 0;
+        let equipageTerminal = null;
+        let equipageTyping = false;
+
+        function getColorCode(colorName) {
+            const colors = {
+                'Vert': '#00FF00',
+                'Rouge': '#FF0000', 
+                'Bleu': '#0088FF',
+                'Violet': '#8800FF',
+                'Jaune': '#FFFF00'
+            };
+            return colors[colorName] || '#00FF00';
+        }
+
+        function typeLineEquipage(line, color, callback) {
+            let i = 0;
+            let interval = setInterval(() => {
+                if (i === 0) {
+                    equipageTerminal.innerHTML += `<span style="color: ${color}">`;
+                }
+                equipageTerminal.innerHTML += line.charAt(i);
+                i++;
+                if (i >= line.length) {
+                    clearInterval(interval);
+                    // Ajouter le carré coloré à la fin de la ligne
+                    equipageTerminal.innerHTML += ` <span style="color: ${color}; background-color: ${color};">██</span></span><br/>`;
+                    equipageTerminal.scrollTop = equipageTerminal.scrollHeight;
+                    callback();
+                }
+            }, 20);
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startEquipageDisplay() {
+            if (equipageTyping) return;
+            equipageTyping = true;
+            equipageTerminal = document.getElementById("equipageTerminal");
+            
+            // Créer un tableau d'objets pour faciliter le mélange
+            const crewMembers = [];
+            for (let i = 0; i < crew.length; i += 3) {
+                crewMembers.push({
+                    id: crew[i],
+                    nom: crew[i + 1],
+                    couleur: crew[i + 2]
+                });
+            }
+            
+            // Mélanger l'ordre des membres d'équipage
+            const shuffledCrew = shuffleArray(crewMembers);
+            let currentMemberIndex = 0;
+            
+            function nextEquipage() {
+                if (currentMemberIndex < shuffledCrew.length) {
+                    const member = shuffledCrew[currentMemberIndex];
+                    const line = `> ${member.id} : ${member.nom}`;
+                    const colorCode = getColorCode(member.couleur);
+                    
+                    typeLineEquipage(line, colorCode, () => {
+                        currentMemberIndex++;
+                        setTimeout(nextEquipage, 100); // Petit délai entre chaque ligne
+                    });
+                } else {
+                    equipageTyping = false;
+                }
+            }
+            nextEquipage();
+        }
+
+        function resetEquipageDisplay() {
+            equipageIndex = 0;
+            equipageTyping = false;
+            if (equipageTerminal) {
+                equipageTerminal.innerHTML = "";
+            }
+        }
+    </script>
+<audio id="keySound" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
+<audio id="lineSound" src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="></audio>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const keySound = document.getElementById("keySound");
+    const lineSound = document.getElementById("lineSound");
+
+    const originalPrint = window.printLine;
+    window.printLine = function(line, delay = 50) {
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < line.length) {
+                terminal.innerHTML += line[i];
+                keySound.currentTime = 0;
+                keySound.play();
+                i++;
+            } else {
+                clearInterval(interval);
+                terminal.innerHTML += "<br>";
+                lineSound.currentTime = 0;
+                lineSound.play();
+            }
+        }, delay);
+    };
+});
+
+function setOneSectionVisible  (sectionId) {
+    const sections = document.querySelectorAll("section");
+    sections.forEach(section => {
+        if (section.id === sectionId) {
+            section.style.display = "block";
+            section.style.opacity = "1";
+        } else {
+            section.style.display = "none";
+            section.style.opacity = "0";
+        }
+    });
+}
+</script>
+</body>
+</html>
