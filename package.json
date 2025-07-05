@@ -4,7 +4,7 @@
   "description": "Serveur de fichiers statiques pour les ressources alien",
   "main": "server.js",
   "scripts": {
-    "buidl": "echo 'No build step required'",
+    "build": "echo 'No build step required'",
    
     "start": "node server.js",
     "dev": "nodemon server.js"
